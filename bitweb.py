@@ -21,9 +21,8 @@ class ThreadsafeJsonRPCServer(jsonrpclib.Server):
 		jsonrpclib.Server.__init__(self, *args, **kwargs)
 
 	def _run_request(self, request, notify=None):
-		self.threadlock.acquire()
-		rv = jsonrpclib.Server._run_request(self, request, notify)
-		self.threadlock.release()
+		with self.threadlock:
+			rv = jsonrpclib.Server._run_request(self, request, notify)
 		return rv
 
 class BitcoinConfig(object):
