@@ -14,3 +14,8 @@ Setup
 -----
 
 Start bitcoind with `bitcoind -daemon`, then run `python bitweb.py`. Once the web server is running, point your browser to `http://localhost:5000`. The user name is `gbe`, the password is `secret`. As you can see, WIP. Transferring money does not work yet, but you can get all sorts of information from bitcoind.
+
+Acknowledgements
+----------------
+
+The fancy CSS is due to [http://getbootstrap.com](Twitter Bootstrap).
