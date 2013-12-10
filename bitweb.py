@@ -6,11 +6,9 @@ import jsonrpclib
 import json
 import os.path
 
-import OpenSSL
-
 import auth
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, static_folder='scripts')
 app.debug = True
 
 class BitcoinConfig(object):
@@ -49,42 +47,49 @@ if __name__ == "__main__":
 	@app.route('/')
 	@auth.required(app)
 	def landing_page():
-		accounts = s.listaccounts()
-		rv = "Hello " + flask.request.authorization.username + "<br/><hr/>"
-		for (name, balance) in accounts.iteritems():
-			rv += "default" if name == "" else name
-			rv += ": "
-			rv += str(balance) + "<br/>"
-		rv += "<hr/>"
-		rv += "<a href=\"/help\">Bitcoind rpc help</a>"
-		return rv
+		return flask.render_template('home.html', username=flask.request.authorization.username)
 
-	@app.route('/help')
-	@app.route('/help/<command>')
+	@app.route('/btc/help')
+	@app.route('/btc/help/<command>')
 	@auth.required(app)
 	def help_page(command=None):
 		txt = ""
 		if command is None:
 			for l in s.help().splitlines():
 				l = escapeHTML(l).split(' ', 1)
-				txt += "<a href=\"/help/" + l[0] + "\">"
+				txt += "<a href=\"/btc/help/" + l[0] + "\">"
 				txt += l[0] + "</a>"
 				if len(l) == 2:
 					txt += " " + l[1]
 				txt += "<br/>\n"
 		else:
 			help = str(s.help(command)).split('\n', 1)
-			txt = "<a href=\"/" + help[0] + "\">" + help[0] + "</a>"
+			txt = "<a href=\"/btc/" + help[0] + "\">" + help[0] + "</a>"
 			if len(help) > 1:
 				txt += "<br/>\n" + escapeHTML(help[1], escapeNL=True)
 		return txt
 
-	@app.route('/<command>')
+	@app.route('/btc/listaccounts')
+	@auth.required(app)
+	def list_accounts():
+		txt = s.listaccounts()
+		txt["default"] = txt[""]
+		del txt[""]
+		txt = json.dumps(txt, indent=2)
+		if flask.request.headers.get("Content-Type") != "application/json":
+			txt = escapeHTML(txt, escapeNL=False)
+			txt = "<pre>" + txt + "</pre>"
+		return txt
+
+	@app.route('/btc/<command>')
 	@auth.required(app)
 	def rpc_command(command):
 		txt = json.dumps(s.__getattr__(command)(), indent=2)
-		txt = escapeHTML(txt, escapeNL=False)
-		txt = "<pre>" + txt + "</pre>"
+		if flask.request.headers.get("Content-Type") != "application/json":
+			txt = escapeHTML(txt, escapeNL=False)
+			txt = "<pre>" + txt + "</pre>"
 		return txt
 
-	app.run(ssl_context='adhoc')
+	# app.run(ssl_context=(cert_file, pkey_file))
+	# app.run(ssl_context='adhoc')
+	app.run()

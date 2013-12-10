@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="/scripts/xhr.js" type="text/javascript"></script>
+		<script src="/scripts/bitweb.js" type="text/javascript"></script>
+		<title>Bitweb</title>
+	</head>
+	<body onload="home_init()" >
+		Hello {{ username }}, your total balance is <span id="balance">unknown</span>.
+		<hr/>
+		<ul id="accounts">
+			<!-- filled asynchroneously -->
+		</ul>
+		<hr/>
+		<a href="/btc/help">Bitcoind RPC help</a>
+	</body>
+</html>
