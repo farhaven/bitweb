@@ -12,7 +12,8 @@ function home_list_addresses() {
 				continue;
 			for (idx in data[acc]) {
 				var c = document.createElement('li');
-				c.innerHTML = "<code>" + data[acc][idx] + "</code> (" + acc + ")";
+				var url = "https://blockchain.info/address/" + data[acc][idx];
+				c.innerHTML = "<a href=\"" + url + "\">" + data[acc][idx] + "</a> (" + acc + ")";
 				list.appendChild(c);
 			}
 		}
