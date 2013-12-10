@@ -121,6 +121,37 @@ if __name__ == "__main__":
 		app.logger.debug("creating new addr for \"%s\"", str(name))
 		return json.dumps({ "addr": s.getnewaddress(name) }, indent=2)
 
+	@app.route("/btc/sendfrom", methods=["POST"])
+	@auth.required(app)
+	def btc_sendfrom():
+		try:
+			data = flask.request.json
+		except Exception as err:
+			return errorString(str(err))
+		app.logger.debug("/btc/sendfrom: " + json.dumps(data, indent=2))
+
+		try:
+			data["amount"] = float(data["amount"])
+		except:
+			return errorString("Invalid amount"), 400
+		try:
+			data["account"] = str(data["account"])
+		except:
+			return errorString("Invalid account"), 400
+		try:
+			data["target"] = str(data["target"])
+			if not data["target"].startswith("1"):
+				raise ValueError()
+		except:
+			return errorString("Invalid target"), 400
+		try:
+			rv = s.sendfrom(data["account"], data["target"], data["amount"])
+		except jsonrpclib.ProtocolError as err:
+			app.logger.debug(err.args[0][1])
+			return errorString(err.args[0][1]), 500
+		app.logger.debug(str(rv))
+		return ""
+
 	@app.route('/btc/<command>')
 	@auth.required(app)
 	def btc_generic_command(command):
