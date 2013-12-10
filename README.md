@@ -18,4 +18,4 @@ Start bitcoind with `bitcoind -daemon`, then run `python bitweb.py`. Once the we
 Acknowledgements
 ----------------
 
-The fancy CSS is due to [http://getbootstrap.com](Twitter Bootstrap).
+The fancy CSS is due to [Twitter Bootstrap](http://getbootstrap.com).
