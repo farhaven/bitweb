@@ -3,6 +3,7 @@ from __future__ import print_function
 import flask
 
 import jsonrpclib
+import threading
 import json
 import os.path
 
@@ -10,6 +11,17 @@ import auth
 
 app = flask.Flask(__name__, static_folder='scripts')
 app.debug = True
+
+class ThreadsafeJsonRPCServer(jsonrpclib.Server):
+	def __init__(self, *args, **kwargs):
+		self.threadlock = threading.Lock()
+		jsonrpclib.Server.__init__(self, *args, **kwargs)
+
+	def _run_request(self, request, notify=None):
+		self.threadlock.acquire()
+		rv = jsonrpclib.Server._run_request(self, request, notify)
+		self.threadlock.release()
+		return rv
 
 class BitcoinConfig(object):
 	def __init__(self, path="~/.bitcoin/bitcoin.conf"):
@@ -42,7 +54,7 @@ def escapeHTML(txt, escapeNL=False):
 
 if __name__ == "__main__":
 	b = BitcoinConfig()
-	s = jsonrpclib.Server(b.getRPCServerAddress())
+	s = ThreadsafeJsonRPCServer(b.getRPCServerAddress())
 
 	@app.route('/')
 	@auth.required(app)
@@ -96,4 +108,4 @@ if __name__ == "__main__":
 
 	# app.run(ssl_context=(cert_file, pkey_file))
 	# app.run(ssl_context='adhoc')
-	app.run()
+	app.run(threaded=True)
