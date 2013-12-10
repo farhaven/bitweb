@@ -23,20 +23,31 @@
 					<form onsubmit="return home_transfer();" role="form">
 						<div class="form-group">
 							<label for="transfer_amount">Amount of BTC to transfer</label>
-							<input class="form-control" type="text" id="transfer_amount" placeholder="0.01" size="25"/>
+							<input class="form-control" type="text" id="transfer_amount" placeholder="0.01"/>
 						</div>
 						<div class="form-group">
 							<label for="transfer_target">Target Bitcoin Address</label>
-							<input class="form-control" type="text" id="transfer_target" placeholder="1vbdGQgsrpwGvdE3NoT7QTLmF7jHAM6MW" size="25"/>
+							<input class="form-control" type="text" id="transfer_target" placeholder="1vbdGQgsrpwGvdE3NoT7QTLmF7jHAM6MW"/>
 						</div>
-						<button class="btn btn-primary" type="submit">Transfer Bitcoins</button>
+						<div class="form-group">
+							<label for="transfer_account">Account to use</label>
+							<input class="form-control" type="text" id="transfer_account" placeholder="default"/>
+						</div>
+						<button id="transfer_submit" class="btn btn-primary" type="submit">Transfer Bitcoins</button>
 					</form>
+					<br/>
+					<div id="transfer_alert" class="alert alert-danger">
+						Here be dragons!
+					</div>
+					<div id="transfer_info" class="alert alert-info">
+						Here be dragons!
+					</div>
 				</div>
 				<div class="col-md-6">
-					<h2>Addresses and Accounts</h2>
-					<ul id="addresslist">
+					<h2>Accounts and Addresses</h2>
+					<dl id="addresslist">
 						<!-- filled asynchroneously -->
-					</ul>
+					</dl>
 					<hr/>
 					<form onsubmit="return home_get_new_address();" class="form-inline" role="form">
 						<div class="row">

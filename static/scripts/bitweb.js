@@ -1,3 +1,31 @@
+function home_get_blockchain_url(addr) {
+	var url = "https://blockchain.info/address/" + addr;
+	return "<a href=\"" + url + "\">" + addr + "</a>";
+}
+
+function home_append_address(acc, addr, newentry) {
+	var root = document.getElementById("addresslist-" + acc);
+	if (root == null) {
+		var list = document.getElementById("addresslist");
+		root = document.createElement("dt");
+		root.innerHTML = acc;
+		list.appendChild(root);
+
+		tmp = document.createElement("dd");
+		root.appendChild(tmp);
+
+		root = document.createElement("ul");
+		root.id = "addresslist-" + acc;
+		tmp.appendChild(root);
+	}
+
+	var c = document.createElement('li');
+	c.innerHTML = home_get_blockchain_url(addr);
+	if (newentry)
+		c.innerHTML += " (<strong>New</strong>)";
+	root.appendChild(c);
+}
+
 function home_list_addresses() {
 	elem = document.createElement("li");
 	elem.innerHTML = "Waiting for bitcoind to answer";
@@ -11,10 +39,7 @@ function home_list_addresses() {
 			if (!data.hasOwnProperty(acc))
 				continue;
 			for (idx in data[acc]) {
-				var c = document.createElement('li');
-				var url = "https://blockchain.info/address/" + data[acc][idx];
-				c.innerHTML = "<a href=\"" + url + "\">" + data[acc][idx] + "</a> (" + acc + ")";
-				list.appendChild(c);
+				home_append_address(acc, data[acc][idx]);
 			}
 		}
 	})
@@ -33,14 +58,10 @@ function home_get_new_address () {
 	if ((name == null) || (name == "default"))
 		name = "";
 	JHR_POST("/btc/getnewaddress", function (data) {
-		var e = document.createElement('li');
-		e.innerHTML = "<code>" + data.addr + "</code> (";
 		if (name != "")
-			e.innerHTML += name;
+			home_append_address(name, data.addr, true);
 		else
-			e.innerHTML += "default";
-		e.innerHTML += ") (<em>New</em>)";
-		document.getElementById('addresslist').appendChild(e);
+			home_append_address("default", data.addr, true);
 	}, { "name": name });
 	return false;
 }
