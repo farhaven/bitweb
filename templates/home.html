@@ -8,9 +8,14 @@
 	<body onload="home_init()" >
 		Hello {{ username }}, your total balance is <span id="balance">unknown</span>.
 		<hr/>
-		<ul id="accounts">
+		<ul id="addresses">
 			<!-- filled asynchroneously -->
 		</ul>
+		<hr/>
+		<form action="/btc/getnewaddress" method="POST">
+			<input id="accountname" type="text" placeholder="Account name for new address"/><br/>
+			<input type="submit" value="Create new address">
+		</form>
 		<hr/>
 		<a href="/btc/help">Bitcoind RPC help</a>
 	</body>

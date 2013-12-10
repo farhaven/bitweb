@@ -54,6 +54,7 @@ def escapeHTML(txt, escapeNL=False):
 
 if __name__ == "__main__":
 	b = BitcoinConfig()
+	# s = jsonrpclib.Server(b.getRPCServerAddress())
 	s = ThreadsafeJsonRPCServer(b.getRPCServerAddress())
 
 	@app.route('/')
@@ -61,10 +62,18 @@ if __name__ == "__main__":
 	def landing_page():
 		return flask.render_template('home.html', username=flask.request.authorization.username)
 
+	@app.route('/btc/getalladdresses')
+	@auth.required(app)
+	def btc_getalladdresses():
+		addrs = []
+		for acc in s.listaccounts():
+			addrs.extend(s.getaddressesbyaccount(acc))
+		return json.dumps({ 'addresses': addrs }, indent=2)
+
 	@app.route('/btc/help')
 	@app.route('/btc/help/<command>')
 	@auth.required(app)
-	def help_page(command=None):
+	def btc_help_page(command=None):
 		txt = ""
 		if command is None:
 			for l in s.help().splitlines():
@@ -87,7 +96,7 @@ if __name__ == "__main__":
 
 	@app.route('/btc/listaccounts')
 	@auth.required(app)
-	def list_accounts():
+	def btc_list_accounts():
 		txt = s.listaccounts()
 		txt["default"] = txt[""]
 		del txt[""]
@@ -97,9 +106,14 @@ if __name__ == "__main__":
 			txt = "<pre>" + txt + "</pre>"
 		return txt
 
+	@app.route("/btc/getnewaddress/<name>")
+	@auth.required(app)
+	def btc_get_new_address(name):
+		return json.dumps(s.getnewaddress(name), indent=2)
+
 	@app.route('/btc/<command>')
 	@auth.required(app)
-	def rpc_command(command):
+	def btc_generic_command(command):
 		txt = json.dumps(s.__getattr__(command)(), indent=2)
 		if flask.request.headers.get("Content-Type") != "application/json":
 			txt = escapeHTML(txt, escapeNL=False)
