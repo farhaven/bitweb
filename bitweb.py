@@ -54,6 +54,12 @@ def escapeHTML(txt, escapeNL=False):
 		txt = txt.replace('\n', '<br/>\n')
 	return txt
 
+def errorString(message):
+	return json.dumps({
+		"status": "error",
+		"message": str(message)
+	})
+
 if __name__ == "__main__":
 	b = BitcoinConfig()
 	s = ThreadsafeJsonRPCServer(b.getRPCServerAddress())
