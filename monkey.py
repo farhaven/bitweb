@@ -4,6 +4,8 @@ def engage():
 		insufficient funds by raising HTTP status 500. xmlrpclib, which is used by
 		jsonrpclib as the transport, then interprets that as "something went wrong with
 		the communication" and aborts.
+
+		This should be called before instantiating the JSON RPC server.
 	"""
 	import xmlrpclib
 	def single_request_tolerant(self, host, handler, request_body, verbose=0):
