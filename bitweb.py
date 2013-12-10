@@ -64,6 +64,10 @@ if __name__ == "__main__":
 				txt += "<br/>\n"
 		else:
 			help = str(s.help(command)).split('\n', 1)
+			tmp = help[0].split(' ', 1)
+			if len(tmp) > 1:
+				help[0] = tmp[0]
+				help[1] = tmp[1] + "\n" + help[1]
 			txt = "<a href=\"/btc/" + help[0] + "\">" + help[0] + "</a>"
 			if len(help) > 1:
 				txt += "<br/>\n" + escapeHTML(help[1], escapeNL=True)
