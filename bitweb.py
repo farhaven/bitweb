@@ -9,7 +9,7 @@ import os.path
 
 import auth
 
-app = flask.Flask(__name__, static_folder='scripts')
+app = flask.Flask(__name__, static_url_path='')
 app.debug = True
 
 class ThreadsafeJsonRPCServer(jsonrpclib.Server):
@@ -112,12 +112,10 @@ if __name__ == "__main__":
 		name = flask.request.json["name"]
 		app.logger.debug("creating new addr for \"%s\"", str(name))
 		return json.dumps({ "addr": s.getnewaddress(name) }, indent=2)
-		# return json.dumps({ "addr": "0xdeadbeef" }, indent=2)
 
 	@app.route('/btc/<command>')
 	@auth.required(app)
 	def btc_generic_command(command):
-		app.logger.debug("generic command %s", command)
 		txt = json.dumps(s.__getattr__(command)(), indent=2)
 		if "application/json" not in flask.request.headers.get("Accept", []):
 			txt = escapeHTML(txt, escapeNL=False)

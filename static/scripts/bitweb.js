@@ -1,7 +1,7 @@
 function home_list_addresses() {
 	elem = document.createElement("li");
 	elem.innerHTML = "Waiting for bitcoind to answer";
-	list = document.getElementById("addresses");
+	list = document.getElementById("addresslist");
 	list.innerHTML = "";
 	list.appendChild(elem);
 
@@ -27,21 +27,27 @@ function home_display_balance () {
 }
 
 function home_get_new_address () {
-	e = document.getElementById('accountname');
-	name = e.value;
+	var e = document.getElementById('accountname');
+	var name = e.value;
 	if ((name == null) || (name == "default"))
 		name = "";
-	console.log('requesting new address for "' + name + '"');
 	JHR_POST("/btc/getnewaddress", function (data) {
-		e = document.createElement('li');
+		var e = document.createElement('li');
 		e.innerHTML = "<code>" + data.addr + "</code> (";
 		if (name != "")
 			e.innerHTML += name;
 		else
 			e.innerHTML += "default";
 		e.innerHTML += ") (<em>New</em>)";
-		document.getElementById('addresses').appendChild(e);
+		document.getElementById('addresslist').appendChild(e);
 	}, { "name": name });
+	return false;
+}
+
+function home_transfer () {
+	var e_amount = document.getElementById("transfer_amount");
+	var e_target = document.getElementById("transfer_target");
+	console.log("Would send " + e_amount.value + " BTC to " + e_target.value + " now");
 	return false;
 }
 
