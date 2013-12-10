@@ -13,14 +13,18 @@ var JHR_GET = function(url, fun) {
 	return xhr;
 }
 
-JHR_POST = function (url, fun, data) {
+JHR_POST = function (url, fun_success, data, fun_error) {
 	var x = new XMLHttpRequest();
 	x.responseJSON = null;
 	x.onreadystatechange = function () {
 		if (x.readyState != 4)
 			return;
-		x.responseJSON = JSON.parse(x.responseText);
-		fun(x.responseJSON);
+		try {
+			x.responseJSON = JSON.parse(x.responseText);
+			fun_success(x.responseJSON);
+		} catch (e) {
+			fun_error(x.responseText, e);
+		}
 	}
 	x.open("POST", url, false);
 	x.setRequestHeader('Accept', 'application/json');
