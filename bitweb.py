@@ -8,6 +8,9 @@ import json
 import os.path
 
 import auth
+import monkey
+
+monkey.engage()
 
 app = flask.Flask(__name__, static_url_path='')
 app.debug = True
