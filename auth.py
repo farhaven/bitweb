@@ -17,7 +17,7 @@ def required(app):
 			auth = flask.request.authorization
 			if not auth or not check_auth(auth.username, auth.password):
 				return authenticate()
-			app.logger.debug('authenticated %s', auth.username)
+			# app.logger.debug('authenticated %s', auth.username)
 			return f(*args, **kwargs)
 		return decorated
 	return rv

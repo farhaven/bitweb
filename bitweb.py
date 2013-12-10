@@ -54,7 +54,6 @@ def escapeHTML(txt, escapeNL=False):
 
 if __name__ == "__main__":
 	b = BitcoinConfig()
-	# s = jsonrpclib.Server(b.getRPCServerAddress())
 	s = ThreadsafeJsonRPCServer(b.getRPCServerAddress())
 
 	@app.route('/')
@@ -65,10 +64,11 @@ if __name__ == "__main__":
 	@app.route('/btc/getalladdresses')
 	@auth.required(app)
 	def btc_getalladdresses():
-		addrs = []
+		addrs = {}
 		for acc in s.listaccounts():
-			addrs.extend(s.getaddressesbyaccount(acc))
-		return json.dumps({ 'addresses': addrs }, indent=2)
+			key = acc if acc != "" else "default"
+			addrs[key] = s.getaddressesbyaccount(acc)
+		return json.dumps(addrs, indent=2)
 
 	@app.route('/btc/help')
 	@app.route('/btc/help/<command>')
@@ -101,21 +101,25 @@ if __name__ == "__main__":
 		txt["default"] = txt[""]
 		del txt[""]
 		txt = json.dumps(txt, indent=2)
-		if flask.request.headers.get("Content-Type") != "application/json":
+		if "application/json" not in flask.request.headers.get("Accept", []):
 			txt = escapeHTML(txt, escapeNL=False)
 			txt = "<pre>" + txt + "</pre>"
 		return txt
 
-	@app.route("/btc/getnewaddress/<name>")
+	@app.route("/btc/getnewaddress", methods=["POST"])
 	@auth.required(app)
-	def btc_get_new_address(name):
-		return json.dumps(s.getnewaddress(name), indent=2)
+	def btc_get_new_address():
+		name = flask.request.json["name"]
+		app.logger.debug("creating new addr for \"%s\"", str(name))
+		return json.dumps({ "addr": s.getnewaddress(name) }, indent=2)
+		# return json.dumps({ "addr": "0xdeadbeef" }, indent=2)
 
 	@app.route('/btc/<command>')
 	@auth.required(app)
 	def btc_generic_command(command):
+		app.logger.debug("generic command %s", command)
 		txt = json.dumps(s.__getattr__(command)(), indent=2)
-		if flask.request.headers.get("Content-Type") != "application/json":
+		if "application/json" not in flask.request.headers.get("Accept", []):
 			txt = escapeHTML(txt, escapeNL=False)
 			txt = "<pre>" + txt + "</pre>"
 		return txt

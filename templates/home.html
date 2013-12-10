@@ -12,8 +12,8 @@
 			<!-- filled asynchroneously -->
 		</ul>
 		<hr/>
-		<form action="/btc/getnewaddress" method="POST">
-			<input id="accountname" type="text" placeholder="Account name for new address"/><br/>
+		<form onsubmit="return home_get_new_address();">
+			<input id="accountname" type="text" placeholder="Account name for new address" size="25"/><br/>
 			<input type="submit" value="Create new address">
 		</form>
 		<hr/>

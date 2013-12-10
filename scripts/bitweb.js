@@ -5,18 +5,22 @@ function home_list_addresses() {
 	list.innerHTML = "";
 	list.appendChild(elem);
 
-	JHR("/btc/getalladdresses", function (data, jhr) {
+	JHR_GET("/btc/getalladdresses", function (data) {
 		list.innerHTML = "";
-		for (idx in data.addresses) {
-			var c = document.createElement('li');
-			c.innerHTML = "<pre>" + data.addresses[idx] + "</pre>";
-			list.appendChild(c);
+		for (acc in data) {
+			if (!data.hasOwnProperty(acc))
+				continue;
+			for (idx in data[acc]) {
+				var c = document.createElement('li');
+				c.innerHTML = "<code>" + data[acc][idx] + "</code> (" + acc + ")";
+				list.appendChild(c);
+			}
 		}
 	})
 }
 
 function home_display_balance () {
-	JHR("/btc/getinfo", function (data, jhr) {
+	JHR_GET("/btc/getinfo", function (data) {
 		span = document.getElementById("balance");
 		span.innerHTML = data.balance + " BTC";
 	})
@@ -27,11 +31,18 @@ function home_get_new_address () {
 	name = e.value;
 	if ((name == null) || (name == "default"))
 		name = "";
-	console.log('requesting new address for ' + e.value);
-	JHR("/btc/getnewaddress/" + name, function (data, jhr) {
-		document.getElementById('addresses').innerHTML = "<li>Please wait...</li>";
-		home_list_addresses();
-	});
+	console.log('requesting new address for "' + name + '"');
+	JHR_POST("/btc/getnewaddress", function (data) {
+		e = document.createElement('li');
+		e.innerHTML = "<code>" + data.addr + "</code> (";
+		if (name != "")
+			e.innerHTML += name;
+		else
+			e.innerHTML += "default";
+		e.innerHTML += ") (<em>New</em>)";
+		document.getElementById('addresses').appendChild(e);
+	}, { "name": name });
+	return false;
 }
 
 function home_init() {
