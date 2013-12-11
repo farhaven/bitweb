@@ -91,13 +91,15 @@ function home_transfer () {
 		if (data["status"] != "error") {
 			console.log("success: " + JSON.stringify(data));
 			e_alert.style.visibility = "hidden";
+			var url = "https://blockchain.info/tx/" + data.txid;
+			e_info.innerHTML = "<a href=\"" + url + "\">" + data.txid + "</a>";
+			e_info.style.visibility = "visible";
 		} else {
 			console.log("a] error: " + data["message"]);
 			e_alert.innerHTML = data["message"];
 			e_alert.style.visibility = "visible";
 		}
 
-		e_info.style.visibility = "hidden";
 		e_submit.disabled = false;
 		e_submit.innerHTML = "Transfer Bitcoins";
 	}, data, function (data, error) {

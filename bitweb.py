@@ -150,7 +150,7 @@ if __name__ == "__main__":
 			app.logger.debug(err.args[0][1])
 			return errorString(err.args[0][1]), 500
 		app.logger.debug(str(rv))
-		return ""
+		return json.dumps({ "status": "success", "txid": str(rv) })
 
 	@app.route('/btc/<command>')
 	@auth.required(app)
